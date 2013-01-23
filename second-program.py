@@ -1,6 +1,6 @@
 import cv2
 import cv2.cv as cv
-
+## ha ha ha
 print "Press Escape to Quit"
 
 defaultCamera = cv2.VideoCapture(0) #set defaultCamera as a video stream from system camera 0
