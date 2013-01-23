@@ -6,9 +6,9 @@ print "Press Escape to Quit"
 
 class threadOne(threading.Thread):#I don't understand this or the next line
     def run(self):
-        setup()
+        self.setup()
 
-    def setup():
+    def setup(self):
         defaultCamera = cv2.VideoCapture(0) #set defaultCamera as a video stream from system camera 0
         s, img = defaultCamera.read()
         cascadeFile = cv2.CascadeClassifier('C:\opencv\data\haarcascades\haarcascade_frontalface_default.xml')
@@ -27,21 +27,26 @@ class threadOne(threading.Thread):#I don't understand this or the next line
             cv2.imshow(threeDWinName,img)
             s, img = defaultCamera.read()
 ##           Call facedetect and draw 
-            lastFace = facedetect(img, lastFace, cascadeFile)
+            lastFace = self.facedetect(img, lastFace, cascadeFile)
+            viewerPosition = self.estimateViewerPosition(lastFace)
 ##          Exit method
             escapeKey = cv2.waitKey(10)
             if escapeKey == 27:
+                print 'hi'
                 cv2.destroyAllWindows()
                 break
 
-    def facedetect(img, lastFaceFound, faceCascade):
+    def facedetect(self, img, lastFaceFound, faceCascade):
         gray = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
         gray = cv2.equalizeHist(gray)
         faces = faceCascade.detectMultiScale(gray, scaleFactor=1.2, minNeighbors=2, minSize=(50, 50), flags = cv2.cv.CV_HAAR_SCALE_IMAGE)
         if len(faces) > 0:
             lastFaceFound = faces[0]
-        draw_3d(lastFaceFound)
         return lastFaceFound
+
+    def estimateViewerPosition(self, face):
+        print 'estimate viewer position'
+        return position
 
 
 class threadTwo(threading.Thread):
