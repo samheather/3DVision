@@ -21,13 +21,13 @@ class threadOne(threading.Thread):#I don't understand this or the next line
         threeDWinName = "3D View"
         cv2.namedWindow(streamWinName, cv2.CV_WINDOW_AUTOSIZE)
         cv2.namedWindow(threeDWinName, cv2.CV_WINDOW_AUTOSIZE)
-        ##cv2.resizeWindow(threeDWinName, 600, 600)
-        img2 = cv.CreateImage((400,400), 8, 3)
+##        cv2.resizeWindow(threeDWinName, 640, 680)
+        img2 = cv.CreateImage((320, 240), 32, 1)
 
         while s:
 ##          Put img's into windows and update img
             cv2.imshow(streamWinName,img)
-            cv2.imshow(threeDWinName,img)
+            cv2.imshow(threeDWinName,img2)
             s, img = defaultCamera.read()
 ##           Call facedetect and draw 
             lastFace = self.facedetect(img, lastFace, cascadeFile)
@@ -52,6 +52,13 @@ class threadOne(threading.Thread):#I don't understand this or the next line
         return lastFaceFound
 
     def estimateViewerPosition(self, face):
+        frameFromX = face[0]
+        frameFromTop = face[1]
+        frameSize = face[2]
+##        Z is distance from camera, Y is elevation and X is X position.
+        Z = 10*frameSize
+        X = frameFromX
+        
         return face[0]
 
 
@@ -65,4 +72,4 @@ class threadTwo(threading.Thread):
 lock = threading.Lock()
 
 threadOne().start()
-threadTwo().start()
+##threadTwo().start()
