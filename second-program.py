@@ -38,12 +38,16 @@ class threadOne(threading.Thread):
                 break
 
     def facedetect(self, img, lastFaceFound, faceCascade):
-        gray = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
-        gray = cv2.equalizeHist(gray)
+        gray = self.convertToGray(img)
         faces = faceCascade.detectMultiScale(gray, scaleFactor=1.2, minNeighbors=2, minSize=(50, 50), flags = cv2.cv.CV_HAAR_SCALE_IMAGE)
         if len(faces) > 0:
             lastFaceFound = faces[0]
         return lastFaceFound
+
+    def convertToGray(self, inputImg):
+        converted = cv2.cvtColor(inputImg, cv2.COLOR_RGB2GRAY)
+        converted = cv2.equalizeHist(converted)
+        return converted
 
     def estimateViewerPosition(self, face):
         windowWidth = 640
