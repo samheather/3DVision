@@ -1,12 +1,13 @@
 import cv2
 import cv2.cv as cv
+import numpy as  np
 import threading
 
 print "Press Escape to Quit"
 
 lastPosition = None
 
-class threadOne(threading.Thread):#I don't understand this or the next line
+class threadOne(threading.Thread):
     def run(self):
         self.setup()
 
@@ -22,7 +23,7 @@ class threadOne(threading.Thread):#I don't understand this or the next line
         cv2.namedWindow(streamWinName, cv2.CV_WINDOW_AUTOSIZE)
         cv2.namedWindow(threeDWinName, cv2.CV_WINDOW_AUTOSIZE)
 ##        cv2.resizeWindow(threeDWinName, 640, 680)
-        img2 = cv.CreateImage((320, 240), 32, 1)
+        img2 = np.zeros((600,600),np.float32)
 
         while s:
 ##          Put img's into windows and update img
@@ -52,13 +53,16 @@ class threadOne(threading.Thread):#I don't understand this or the next line
         return lastFaceFound
 
     def estimateViewerPosition(self, face):
-        frameFromX = face[0]
+        windowWidth = 640
+        windowHeight = 480
+        frameFromSide = face[0]
         frameFromTop = face[1]
         frameSize = face[2]
 ##        Z is distance from camera, Y is elevation and X is X position.
         Z = 10*frameSize
-        X = frameFromX
-        
+        X = frameFromSide
+        frameCenterYFromTop = frameFromTop + frameSize/2
+        Y = 
         return face[0]
 
 
