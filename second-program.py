@@ -19,24 +19,17 @@ class threadOne(threading.Thread):
         lastFace = [0,0,0,0]
         
         streamWinName = "Camera Stream"
-        threeDWinName = "3D View"
         cv2.namedWindow(streamWinName, cv2.CV_WINDOW_AUTOSIZE)
-        cv2.namedWindow(threeDWinName, cv2.CV_WINDOW_AUTOSIZE)
-##        cv2.resizeWindow(threeDWinName, 640, 680)
-        img2 = np.zeros((600,600),np.float32)
 
         while s:
 ##          Put img's into windows and update img
             cv2.imshow(streamWinName,img)
-            cv2.imshow(threeDWinName,img2)
             s, img = defaultCamera.read()
 ##           Call facedetect and draw 
             lastFace = self.facedetect(img, lastFace, cascadeFile)
             viewerPosition = self.estimateViewerPosition(lastFace)
             with lock:
-                print viewerPosition
                 lastPosition = viewerPosition
-                print lastPosition
 ##          Exit method
             escapeKey = cv2.waitKey(10)
             if escapeKey == 27:
@@ -62,18 +55,30 @@ class threadOne(threading.Thread):
         Z = 10*frameSize
         X = frameFromSide
         frameCenterYFromTop = frameFromTop + frameSize/2
-        Y = 
-        return face[0]
+        Y = 0
+        return [X,Y,Z]
 
 
 class threadTwo(threading.Thread):
     def run(self):
         global lastPosition
+        
+        threeDWinName = "3D View"
+        cv2.namedWindow(threeDWinName, cv2.CV_WINDOW_AUTOSIZE)
+        img2 = np.zeros((600,600),np.float32)
+        cv2.imshow(threeDWinName,img2)
+        
         while True:
             with lock:
-                print 'hello', lastPosition
+                viewerPosition = lastPosition
+            img2 = self.render(viewerPosition, img2)
+
+    def render(self, positionToRenderFor, targetImg):
+        cv2.circle(targetImg, (positionToRenderFor[0], positionToRenderFor[1]), positionToRenderFor[2]/2, 255, -1)
+        return targetImg
+        
         
 lock = threading.Lock()
 
 threadOne().start()
-##threadTwo().start()
+threadTwo().start()
