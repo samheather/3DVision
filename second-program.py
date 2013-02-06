@@ -2,17 +2,18 @@ import cv2
 import cv2.cv as cv
 import numpy as  np
 import threading
+from Queue import Queue
 
 print "Press Escape to Quit"
 
-lastPosition = [10,10,10]
+my_queue = Queue()
+my_queue.put([10,10,10])
 
 class threadOne(threading.Thread):
     def run(self):
         self.setup()
 
     def setup(self):
-        global lastPosition
         defaultCamera = cv2.VideoCapture(0) #set defaultCamera as a video stream from system camera 0
         s, img = defaultCamera.read()
         cascadeFile = cv2.CascadeClassifier('C:\opencv\data\haarcascades\haarcascade_frontalface_default.xml')
@@ -30,8 +31,7 @@ class threadOne(threading.Thread):
 ##           Call facedetect and draw 
             lastFace = self.facedetect(img, lastFace, cascadeFile)
             viewerPosition = self.estimateViewerPosition(lastFace, videoHeight, videoWidth)
-            with lock:
-                lastPosition = viewerPosition
+            my_queue.put(viewerPosition)
 ##          Exit method
             escapeKey = cv2.waitKey(10)
             if escapeKey == 27:
@@ -67,7 +67,6 @@ class threadOne(threading.Thread):
 
 class threadTwo(threading.Thread):
     def run(self):
-        global lastPosition
         
         threeDWinName = "3D View"
         cv2.namedWindow(threeDWinName, cv2.CV_WINDOW_AUTOSIZE)
@@ -77,8 +76,10 @@ class threadTwo(threading.Thread):
         cv2.imshow(threeDWinName,img2)
         
         while True:
-            with lock:
-                viewerPosition = lastPosition
+            queueToSkip = int(my_queue.qsize()) - 1## this is approximate size - cause problem?
+            for queueIndex in range(0, queueToSkip):
+                my_queue.get()
+            viewerPosition = my_queue.get()
             img2 = self.render(viewerPosition, img2)
             if (img2 == None):
                 break
