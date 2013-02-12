@@ -19,7 +19,7 @@ def on_draw():
     pyglet.gl.glMatrixMode(pyglet.gl.GL_MODELVIEW)
     pyglet.gl.glLoadIdentity()
     pyglet.gl.glTranslatef(0, 0, -6)
-    pyglet.gl.glRotatef(1, 30, 30, 60) #seems to rotate x degrees around a point x,y,z???
+    pyglet.gl.glRotatef(0, 0, 0, 0) #seems to rotate c degrees around a point x,y,z???
     
     cubeWindow.clear()
     

@@ -1,6 +1,7 @@
 import cv2
 import cv2.cv as cv
 import numpy as  np
+import pyglet
 import threading
 from Queue import Queue
 
@@ -67,35 +68,59 @@ class threadOne(threading.Thread):
 
 class threadTwo(threading.Thread):
     def run(self):
+
+        cubeWindow = pyglet.window.Window(width = 400, height = 400)
+
+        @cubeWindow.event
+        def on_draw():
+
+            print 'ran on_draw'
+
+            # Move the camera back a little.
+            # TODO(sam): When you want to start rotating the camera, this should move into on_draw,
+            # and there should be a call to gRotatef.
+            pyglet.gl.glMatrixMode(pyglet.gl.GL_MODELVIEW)
+            pyglet.gl.glLoadIdentity()
+            pyglet.gl.glTranslatef(0, 0, -6)
+            pyglet.gl.glRotatef(0, 0, 0, 0) #seems to rotate c degrees around a point x,y,z???
+            
+            cubeWindow.clear()
+            
+            pyglet.gl.glColor4f(1.0,0,0,1.0)
+
+            pyglet.graphics.draw_indexed(8, pyglet.gl.GL_LINES, [0, 1, 1, 2, 2, 3, 3, 0,# front square
+                                                                 4, 5, 5, 6, 6, 7, 7, 4,# back square
+                                                                 0, 4, 1, 5, 2, 6, 3, 7],# connectors
+                                   ('v3f', (-1, -1, 0,
+                                            1, -1, 0,
+                                            1, 1, 0,
+                                            -1, 1, 0,
+                                            -1, -1, -1,
+                                            1, -1, -1,
+                                            1, 1, -1,
+                                            -1, 1, -1)))
         
-        threeDWinName = "3D View"
-        cv2.namedWindow(threeDWinName, cv2.CV_WINDOW_AUTOSIZE)
-        img2 = cv2.imread('white.png', -1)
-        cv2.imshow(threeDWinName,img2)
-##        cv2.circle(img2, (100,100),100,255,1)
-        cv2.imshow(threeDWinName,img2)
+        @cubeWindow.event
+        def on_show():
+            pyglet.gl.glClear(pyglet.gl.GL_COLOR_BUFFER_BIT | pyglet.gl.GL_DEPTH_BUFFER_BIT)
+            # Set up projection matrix.
+            pyglet.gl.glMatrixMode(pyglet.gl.GL_PROJECTION)
+            pyglet.gl.glLoadIdentity()
+            pyglet.gl.gluPerspective(45.0, float(cubeWindow.width)/cubeWindow.height, 0.1, 360)
+            print 'ran on_show'
+        pyglet.app.run()
         
         while True:
             queueToSkip = int(my_queue.qsize()) - 1## this is approximate size - cause problem?
             for queueIndex in range(0, queueToSkip):
                 my_queue.get()
             viewerPosition = my_queue.get()
-            img2 = self.render(viewerPosition, img2)
-            if (img2 == None):
-                break
 
-    def render(self, positionToRenderFor, targetImg):
-        threeDWinName = "3D View"
-        print 'render', positionToRenderFor
-##      Exit method
-        escapeKey = cv2.waitKey(10)
-        if escapeKey == 27:
-            print 'Goodbye 2'
-            cv2.destroyWindow(threeDWinName)
-            return None
-        cv2.circle(targetImg, (positionToRenderFor[0], positionToRenderFor[1]+180), positionToRenderFor[2]/2, 255, -1)
-        cv2.imshow(threeDWinName,targetImg)
-        return targetImg
+            on_draw()
+
+        
+        
+
         
         
 lock = threading.Lock()
