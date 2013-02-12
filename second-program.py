@@ -108,21 +108,24 @@ class threadTwo(threading.Thread):
             pyglet.gl.glLoadIdentity()
             pyglet.gl.gluPerspective(45.0, float(cubeWindow.width)/cubeWindow.height, 0.1, 360)
             print 'ran on_show'
+        
+
+        def update(dt):
+##            put in re-render code here
+            print 'did update'
+        
+##        while True:
+##            queueToSkip = int(my_queue.qsize()) - 1## this is approximate size - cause problem?
+##            for queueIndex in range(0, queueToSkip):
+##                my_queue.get()
+##            viewerPosition = my_queue.get()
+
+        
+        pyglet.clock.schedule_interval(update, 0.1)
         pyglet.app.run()
-        
-        while True:
-            queueToSkip = int(my_queue.qsize()) - 1## this is approximate size - cause problem?
-            for queueIndex in range(0, queueToSkip):
-                my_queue.get()
-            viewerPosition = my_queue.get()
 
-            on_draw()
 
-        
-        
 
-        
-        
 lock = threading.Lock()
 
 threadOne().start()
