@@ -1,5 +1,7 @@
-computer-vision
+3DVision
 ===============
+
+This project is superseeded by 3JVision - the version written in Java, since this version DOES NOT WORK.  Please see http://github.com/samheather/3JVision.
 
 The goal of this project is to create a simple 3D cube that rotates as you move
 your head as if you were literally moving your head to see it form a different
